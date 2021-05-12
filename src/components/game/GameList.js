@@ -24,13 +24,7 @@ export const GameList = (props) => {
                             </h2>
                         </div>
 
-                        <button className="editButton" onClick = {() => {
-                            history.push({ pathname: `/games/edit/${game.id}`})
-                        }}>edit</button>
-
-                        <button className="deleteButton" onClick={()=>{
-                            deleteGame(game.id)
-                        }}>delete</button>
+                        
                     </section>
                 })
             }

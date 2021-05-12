@@ -1,12 +1,13 @@
 import React,{ useContext, useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
 import { GameContext } from "./GameProvider"
+
 
 export const GameDetail = () => {
         
-    const { getGameById } = useContext(GameContext)
+    const { getGameById, deleteGame } = useContext(GameContext)
     const { gameId } = useParams()
-
+    const history = useHistory()
     
     const [currentGame, setCurrentGame] = useState({
         ages: "",
@@ -30,9 +31,20 @@ export const GameDetail = () => {
             <div className="gameMaker">Maker: {currentGame.maker}</div>
             <div className="gameYear">Year: {currentGame.year}</div>
             <div className="gameNumberOfPlayers">Players: {currentGame.players}</div>
-            <div className="gameDescription">Description: {currentGame.description}</div>
             <div className="gameAge">Ages: {currentGame.ages}</div>
             <div className="gameEstTime">Time: {currentGame.est_time}</div>
+            <div className="gameDescription">Description: {currentGame.description}</div>
+            
+            <button className="editButton" 
+                onClick = {() => {
+                history.push({ pathname: `/games/${gameId}/edit`})
+                }}>edit</button>
+
+            <button className="deleteButton"
+                onClick={() => {
+                deleteGame(gameId)
+                }}>delete</button>
+
         </article>
     )
 }
