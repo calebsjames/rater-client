@@ -1,5 +1,6 @@
 import React from "react"
 import { Route } from "react-router-dom"
+import { CategoryProvider } from "./category/CategoryProvider.js"
 import { GameDetail } from "./game/GameDetail.js"
 import { GameForm } from "./game/GameForm.js"
 import { GameList } from "./game/GameList.js"
@@ -15,7 +16,8 @@ export const ApplicationViews = () => {
             margin: "5rem 2rem",
             lineHeight: "1.75rem"
         }}>
-            <GameProvider>           
+            <GameProvider>
+                <CategoryProvider>           
                     <Route exact path="/">
                         <GameList />
                     </Route>
@@ -31,6 +33,7 @@ export const ApplicationViews = () => {
                     <Route exact path="/games/:gameId(\d+)/edit">
                         <GameForm />
                     </Route>
+                </CategoryProvider>
             </GameProvider>
             
         </main>

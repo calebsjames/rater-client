@@ -1,13 +1,15 @@
 import React, { useContext, useState, useEffect } from "react"
-import { GameContext } from "./GameProvider.js"
 import { useHistory, useParams } from 'react-router-dom'
-
+import { GameContext } from "./GameProvider.js"
+import { CategoryContext } from "../category/CategoryProvider.js"
+import { Multiselect } from 'multiselect-react-dropdown'
 
 export const GameForm = () => {
     
     const history = useHistory()
     const { gameId } = useParams()
-    const { getGameById, editGame, createGame, getGames, gameTypes } = useContext(GameContext)
+    const { getGameById, editGame, createGame } = useContext(GameContext)
+    const { getCategories, categories } = useContext(CategoryContext)
     
 
     const [currentGame, setCurrentGame] = useState({
@@ -17,13 +19,14 @@ export const GameForm = () => {
         maker: "",
         number_of_players: 0,
         title: "",
-        year: 0
+        year: 0,
+        category: []
     })
 
 
     
     useEffect(() => {        
-        getGames()
+        getCategories()
         .then(() => {
             if(gameId) {
                 getGameById(gameId)
@@ -32,24 +35,22 @@ export const GameForm = () => {
         })
     }, [])
 
-    /*
-        REFACTOR CHALLENGE START
+ 
+    const handleControlledInputChange = (event) => {
+        let game = {...currentGame}
+        game[event.target.id] = event.target.value
+        setCurrentGame(game)
+    }
 
-        Can you refactor this code so that all property
-        state changes can be handled with a single function
-        instead of five functions that all, largely, do
-        the same thing?
-
-        One hint: [event.target.name]
-    */
-        const handleControlledInputChange = (event) => {
-            let game = {...currentGame}
-        
-            game[event.target.id] = event.target.value
-        
-            setCurrentGame(game)
-          }
+    const handleControlledSelect = (e) => {
+        let game = {...currentGame}
+        game.categories = e
+        console.log(e)
+        console.log(game)
+        setCurrentGame(game)
+    }
     
+
     return (
         <form className="gameForm">
             <h2 className="gameForm__title">Register New Game</h2>
@@ -116,17 +117,21 @@ export const GameForm = () => {
                     />
                 </div>
             </fieldset>
-            
-            
-            {/* You create the rest of the input fields for each game property */}
+            <fieldset>
+                <div className="form-group">
+                    <label htmlFor="game_type_id">GameType: </label>
+                    <Multiselect 
+                        id="category" options={categories} selectedValues={currentGame.categories} displayValue="name" 
+                        onSelect={ handleControlledSelect } onRemove={ handleControlledSelect }>
+                    </Multiselect>
+                    {console.log()}
+                </div>
+            </fieldset>           
 
             <button type="submit"
                 onClick={evt => {
-                    // Prevent form from being submitted
                     evt.preventDefault()
-
-                    
-                    // Send POST request to your API
+                    console.log(currentGame)
                     if(gameId) {
                         
                         const game = {
@@ -137,7 +142,9 @@ export const GameForm = () => {
                             maker: currentGame.maker,
                             number_of_players: parseInt(currentGame.number_of_players),
                             title: currentGame.title,
-                            year: currentGame.year
+                            year: currentGame.year,
+
+                            categories: currentGame.categories.map(cg => cg.id)
                         }
 
                         editGame(game)
@@ -152,13 +159,17 @@ export const GameForm = () => {
                             maker: currentGame.maker,
                             number_of_players: parseInt(currentGame.number_of_players),
                             title: currentGame.title,
-                            year: currentGame.year
+                            year: currentGame.year,
+                            categories: currentGame.categories.map(cg => cg.id)
+
                         }
                         createGame(game)
                         .then(() => history.push("/games"))
                     }
                     }}
-                    className="btn btn-primary">{ gameId ? "Edit" : "Create" }</button>
+                    className="btn btn-primary">{ gameId ? "Edit" : "Create" }
+            </button>
+
         </form>
     )
 }
